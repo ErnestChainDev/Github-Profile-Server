@@ -9,33 +9,52 @@ dotenv.config();
 const app = express();
 
 const PORT = Number(process.env.PORT || 3001);
-const BASE_URL =
-  process.env.BASE_URL || `https://github-profile-views-two.vercel.app/${PORT}`;
+const BASE_URL = process.env.BASE_URL || `https://github-profile-views-two.vercel.app/${PORT}`;
 const TRUST_PROXY = process.env.TRUST_PROXY === "true";
 const COOLDOWN_HOURS = Number(process.env.COOLDOWN_HOURS || 24);
+
+function requireEnv(name) {
+  const value = process.env[name];
+  if (!value || !value.trim()) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
+
+const MYSQLHOST = requireEnv("MYSQLHOST");
+const MYSQLPORT = Number(process.env.MYSQLPORT || 3306);
+const MYSQLUSER = requireEnv("MYSQLUSER");
+const MYSQLPASSWORD = requireEnv("MYSQLPASSWORD");
+const MYSQLDATABASE = requireEnv("MYSQLDATABASE");
 
 if (TRUST_PROXY) {
   app.set("trust proxy", true);
 }
 
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 const pool = mysql.createPool({
-  host: process.env.MYSQLHOST,
-  port: Number(process.env.MYSQLPORT || 3306),
-  user: process.env.MYSQLUSER,
-  password: process.env.MYSQLPASSWORD,
-  database: process.env.MYSQLDATABASE,
+  host: MYSQLHOST,
+  port: MYSQLPORT,
+  user: MYSQLUSER,
+  password: MYSQLPASSWORD,
+  database: MYSQLDATABASE,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  enableKeepAlive: true,
 });
 
 async function initDb() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS profile_views (
-      username VARCHAR(255) PRIMARY KEY,
+      username VARCHAR(255) NOT NULL PRIMARY KEY,
       views INT NOT NULL DEFAULT 0,
       updated_at DATETIME NOT NULL
     )
@@ -136,7 +155,7 @@ async function createProfile(username) {
     [username, 0, now]
   );
 
-  return getProfile(username);
+  return await getProfile(username);
 }
 
 async function getOrCreateProfile(username) {
@@ -235,7 +254,7 @@ async function getProfileData(username) {
     return null;
   }
 
-  return getOrCreateProfile(cleanUsername);
+  return await getOrCreateProfile(cleanUsername);
 }
 
 function renderBadgeSvg(username, views) {
@@ -276,7 +295,7 @@ app.get("/", (_req, res) => {
   });
 });
 
-app.get("/api/health", async (_req, res) => {
+app.get("/api/health", async (_req, res, next) => {
   try {
     await pool.query("SELECT 1");
     res.json({
@@ -285,11 +304,7 @@ app.get("/api/health", async (_req, res) => {
       database: "connected",
     });
   } catch (error) {
-    console.error("Health check DB error:", error);
-    res.status(500).json({
-      ok: false,
-      error: "Database connection failed",
-    });
+    next(error);
   }
 });
 
@@ -386,7 +401,8 @@ app.use((req, res) => {
 });
 
 app.use((err, _req, res, _next) => {
-  console.error("Server error:", err);
+  console.error("SERVER ERROR:", err);
+
   res.status(500).json({
     error: "Internal server error",
     details: err.message,
@@ -395,15 +411,20 @@ app.use((err, _req, res, _next) => {
 
 async function startServer() {
   try {
-    await initDb();
+    console.log("Connecting to MySQL...");
     await pool.query("SELECT 1");
+    console.log("MySQL connected.");
 
-    app.listen(PORT, () => {
+    console.log("Initializing tables...");
+    await initDb();
+    console.log("Tables ready.");
+
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server running on port ${PORT}`);
       console.log(`Health check: ${BASE_URL}/api/health`);
     });
   } catch (error) {
-    console.error("Failed to start server:", error);
+    console.error("FAILED TO START SERVER:", error);
     process.exit(1);
   }
 }
