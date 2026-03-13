@@ -288,51 +288,55 @@ function renderNeonLineBadgeSvg(username, views) {
   const leftText = `${safeUsername} views`;
   const rightText = safeViews;
 
-  const leftWidth = Math.max(180, leftText.length * 8 + 34);
-  const rightWidth = Math.max(82, rightText.length * 10 + 28);
+  const leftWidth = Math.max(220, leftText.length * 8 + 40);
+  const rightWidth = Math.max(90, rightText.length * 10 + 30);
   const totalWidth = leftWidth + rightWidth;
-  const height = 44;
-  const radius = 16;
-  const strokeInset = 3;
-  const strokeWidth = 4;
-  const innerX = 7;
-  const innerY = 7;
-  const innerWidth = totalWidth - 14;
-  const innerHeight = height - 14;
+  const height = 76;
+  const outerStroke = 10;
+
+  const panelX = 24;
+  const panelY = 18;
+  const panelWidth = totalWidth - 48;
+  const panelHeight = 40;
+
+  const dividerX = leftWidth + 6;
+  const textBoxX = 38;
+  const textBoxY = 30;
+  const textBoxWidth = leftWidth - 86;
+  const textBoxHeight = 18;
+
+  const countBoxX = leftWidth + 24;
+  const countBoxY = 30;
+  const countBoxWidth = rightWidth - 46;
+  const countBoxHeight = 18;
 
   return `
 <svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${height}" viewBox="0 0 ${totalWidth} ${height}" role="img" aria-label="${safeUsername} views: ${safeViews}">
   <defs>
-    <linearGradient id="bgPanel" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#08111d"/>
-      <stop offset="100%" stop-color="#05070d"/>
+    <linearGradient id="outerPanel" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#ff00cc"/>
+      <stop offset="52%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#00a6ff"/>
     </linearGradient>
 
-    <linearGradient id="innerGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="rgba(34,211,238,0.10)"/>
-      <stop offset="100%" stop-color="rgba(217,70,239,0.10)"/>
-    </linearGradient>
-
-    <linearGradient id="neonBorder" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#d946ef"/>
-      <stop offset="18%" stop-color="#c026d3"/>
-      <stop offset="38%" stop-color="#7c3aed"/>
-      <stop offset="58%" stop-color="#22d3ee"/>
-      <stop offset="78%" stop-color="#67e8f9"/>
-      <stop offset="100%" stop-color="#d946ef"/>
+    <linearGradient id="sweepGradient" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#ff00cc"/>
+      <stop offset="35%" stop-color="#d946ef"/>
+      <stop offset="65%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#00d4ff"/>
       <animateTransform
         attributeName="gradientTransform"
         type="rotate"
         from="0 ${totalWidth / 2} ${height / 2}"
         to="360 ${totalWidth / 2} ${height / 2}"
-        dur="3.4s"
+        dur="3s"
         repeatCount="indefinite"
       />
     </linearGradient>
 
-    <filter id="outerNeon" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur stdDeviation="2.8" result="blur1"/>
-      <feGaussianBlur stdDeviation="6.5" result="blur2"/>
+    <filter id="outerGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="4" result="blur1"/>
+      <feGaussianBlur stdDeviation="9" result="blur2"/>
       <feMerge>
         <feMergeNode in="blur2"/>
         <feMergeNode in="blur1"/>
@@ -340,135 +344,135 @@ function renderNeonLineBadgeSvg(username, views) {
       </feMerge>
     </filter>
 
-    <filter id="softTextGlow" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur stdDeviation="1.8" result="blur"/>
+    <filter id="innerGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2" result="blur1"/>
       <feMerge>
-        <feMergeNode in="blur"/>
+        <feMergeNode in="blur1"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
 
-    <mask id="movingBorderMask">
+    <filter id="textGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="1.2" result="blur1"/>
+      <feMerge>
+        <feMergeNode in="blur1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <mask id="borderMask">
       <rect width="${totalWidth}" height="${height}" fill="black"/>
       <rect
-        x="${strokeInset}"
-        y="${strokeInset}"
-        width="${totalWidth - strokeInset * 2}"
-        height="${height - strokeInset * 2}"
-        rx="${radius}"
+        x="${outerStroke / 2}"
+        y="${outerStroke / 2}"
+        width="${totalWidth - outerStroke}"
+        height="${height - outerStroke}"
         fill="none"
         stroke="white"
-        stroke-width="${strokeWidth}"
+        stroke-width="${outerStroke}"
       />
     </mask>
-
-    <linearGradient id="lineSweep" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#d946ef"/>
-      <stop offset="22%" stop-color="#c026d3"/>
-      <stop offset="50%" stop-color="#22d3ee"/>
-      <stop offset="78%" stop-color="#67e8f9"/>
-      <stop offset="100%" stop-color="#d946ef"/>
-      <animateTransform
-        attributeName="gradientTransform"
-        type="translate"
-        from="-${totalWidth} 0"
-        to="${totalWidth} 0"
-        dur="2.3s"
-        repeatCount="indefinite"
-      />
-    </linearGradient>
-
-    <pattern id="tinyLights" x="0" y="0" width="9" height="9" patternUnits="userSpaceOnUse">
-      <circle cx="4.5" cy="4.5" r="1.15" fill="white" opacity="0.9"/>
-    </pattern>
   </defs>
 
   <rect
-    x="${strokeInset}"
-    y="${strokeInset}"
-    width="${totalWidth - strokeInset * 2}"
-    height="${height - strokeInset * 2}"
-    rx="${radius}"
-    fill="url(#bgPanel)"
+    x="${outerStroke / 2}"
+    y="${outerStroke / 2}"
+    width="${totalWidth - outerStroke}"
+    height="${height - outerStroke}"
+    fill="rgba(8,10,20,0.92)"
   />
 
   <rect
-    x="${innerX}"
-    y="${innerY}"
-    width="${innerWidth}"
-    height="${innerHeight}"
-    rx="${radius - 5}"
-    fill="rgba(255,255,255,0.02)"
-  />
-
-  <rect
-    x="${innerX}"
-    y="${innerY}"
-    width="${innerWidth}"
-    height="${innerHeight}"
-    rx="${radius - 5}"
-    fill="url(#innerGlow)"
-    opacity="0.7"
-  />
-
-  <rect
-    x="${strokeInset}"
-    y="${strokeInset}"
-    width="${totalWidth - strokeInset * 2}"
-    height="${height - strokeInset * 2}"
-    rx="${radius}"
+    x="${outerStroke / 2}"
+    y="${outerStroke / 2}"
+    width="${totalWidth - outerStroke}"
+    height="${height - outerStroke}"
     fill="none"
-    stroke="url(#neonBorder)"
-    stroke-width="${strokeWidth}"
-    filter="url(#outerNeon)"
-    opacity="0.95"
-  >
-    <animate attributeName="stroke-dasharray" values="22 10 70 12;60 12 22 10;22 10 70 12" dur="2.8s" repeatCount="indefinite"/>
-    <animate attributeName="stroke-dashoffset" from="0" to="-160" dur="2.8s" repeatCount="indefinite"/>
-  </rect>
+    stroke="url(#outerPanel)"
+    stroke-width="${outerStroke}"
+    opacity="0.55"
+    filter="url(#outerGlow)"
+  />
 
-  <g mask="url(#movingBorderMask)" filter="url(#outerNeon)" opacity="0.95">
-    <rect x="-${totalWidth}" y="0" width="${totalWidth * 3}" height="${height}" fill="url(#lineSweep)">
-      <animate attributeName="x" from="-${totalWidth}" to="0" dur="2.3s" repeatCount="indefinite"/>
-    </rect>
-    <rect x="-${totalWidth}" y="0" width="${totalWidth * 3}" height="${height}" fill="url(#tinyLights)" opacity="0.85">
-      <animate attributeName="x" from="-${totalWidth}" to="0" dur="2.3s" repeatCount="indefinite"/>
+  <g mask="url(#borderMask)">
+    <rect
+      x="-${totalWidth}"
+      y="0"
+      width="${totalWidth * 3}"
+      height="${height}"
+      fill="url(#sweepGradient)"
+      opacity="0.95"
+      filter="url(#outerGlow)"
+    >
+      <animate attributeName="x" from="-${totalWidth}" to="0" dur="2.2s" repeatCount="indefinite"/>
     </rect>
   </g>
 
   <rect
-    x="${innerX}"
-    y="${innerY}"
-    width="${innerWidth}"
-    height="${innerHeight}"
-    rx="${radius - 5}"
-    fill="none"
-    stroke="rgba(255,255,255,0.10)"
+    x="${panelX}"
+    y="${panelY}"
+    width="${panelWidth}"
+    height="${panelHeight}"
+    fill="rgba(255,255,255,0.05)"
+    stroke="rgba(255,255,255,0.38)"
+    stroke-width="1.5"
+    filter="url(#innerGlow)"
+  />
+
+  <line
+    x1="${dividerX}"
+    y1="${panelY}"
+    x2="${dividerX}"
+    y2="${panelY + panelHeight}"
+    stroke="rgba(255,255,255,0.65)"
+    stroke-width="2"
+    filter="url(#innerGlow)"
+  />
+
+  <rect
+    x="${textBoxX}"
+    y="${textBoxY}"
+    width="${textBoxWidth}"
+    height="${textBoxHeight}"
+    fill="#07090f"
+    stroke="rgba(0,255,255,0.22)"
+    stroke-width="1"
+  />
+
+  <rect
+    x="${countBoxX}"
+    y="${countBoxY}"
+    width="${countBoxWidth}"
+    height="${countBoxHeight}"
+    fill="#07090f"
+    stroke="rgba(255,255,255,0.22)"
     stroke-width="1"
   />
 
   <text
-    x="${leftWidth / 2}"
-    y="29"
+    x="${textBoxX + textBoxWidth / 2}"
+    y="${textBoxY + 13}"
     text-anchor="middle"
     font-family="Arial, Helvetica, sans-serif"
-    font-size="14"
+    font-size="10"
     font-weight="900"
-    fill="#f8fafc"
-    filter="url(#softTextGlow)"
+    fill="#f5f3ff"
+    filter="url(#textGlow)"
+    letter-spacing="0.4"
   >
-    ${leftText}
+    ${leftText.toUpperCase()}
   </text>
 
   <text
-    x="${leftWidth + rightWidth / 2}"
-    y="29"
+    x="${countBoxX + countBoxWidth / 2}"
+    y="${countBoxY + 13}"
     text-anchor="middle"
     font-family="Arial, Helvetica, sans-serif"
-    font-size="14"
+    font-size="11"
     font-weight="900"
     fill="#ffffff"
-    filter="url(#softTextGlow)"
+    filter="url(#textGlow)"
+    letter-spacing="0.4"
   >
     ${rightText}
   </text>
