@@ -430,7 +430,7 @@ function renderNeonGradientBadgeSvg(username, views) {
     width="${contentW}"
     height="${contentH}"
     rx="${radius - borderSize}"
-    fill="#efeff2"
+    fill="#171717"
   />
 
   <line
@@ -463,12 +463,10 @@ function renderNeonGradientBadgeSvg(username, views) {
       y="${textY}"
       text-anchor="middle"
       font-family="Arial, Helvetica, sans-serif"
-      font-size="16"
+      font-size="15"
       font-weight="900"
       fill="url(#textGradientSub)"
       filter="url(#softTextGlow)"
-      lengthAdjust="spacingAndGlyphs"
-      textLength="${rightWidth - 28}"
     >
       ${rightText}
     </text>
