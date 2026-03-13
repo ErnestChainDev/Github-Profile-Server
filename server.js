@@ -288,24 +288,28 @@ function renderNeonGradientBadgeSvg(username, views) {
   const leftText = `${safeUsername} views`;
   const rightText = safeViews;
 
-  const leftWidth = Math.max(230, leftText.length * 8 + 36);
-  const rightWidth = Math.max(90, rightText.length * 10 + 28);
+  const leftWidth = Math.max(260, leftText.length * 10 + 56);
+  const rightWidth = Math.max(96, rightText.length * 12 + 34);
   const totalWidth = leftWidth + rightWidth;
-  const height = 76;
+  const height = 84;
   const radius = 18;
   const borderSize = 2;
 
-  const cardX = 6;
-  const cardY = 6;
-  const cardW = totalWidth - 12;
-  const cardH = height - 12;
+  const cardX = 8;
+  const cardY = 8;
+  const cardW = totalWidth - 16;
+  const cardH = height - 16;
 
   const contentX = cardX + borderSize;
   const contentY = cardY + borderSize;
   const contentW = cardW - borderSize * 2;
   const contentH = cardH - borderSize * 2;
 
-  const countSplitX = leftWidth + 6;
+  const splitX = leftWidth + 8;
+
+  const usernameCenterX = leftWidth / 2 + 4;
+  const countCenterX = splitX + (totalWidth - splitX) / 2 - 2;
+  const textY = height / 2 + 8;
 
   return `
 <svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${height}" viewBox="0 0 ${totalWidth} ${height}" role="img" aria-label="${safeUsername} views: ${safeViews}">
@@ -317,7 +321,7 @@ function renderNeonGradientBadgeSvg(username, views) {
 
     <linearGradient id="neonBorderMove" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#ff2f86"/>
-      <stop offset="40%" stop-color="#ff7fa7"/>
+      <stop offset="45%" stop-color="#ff8db8"/>
       <stop offset="100%" stop-color="#00fff1"/>
       <animateTransform
         attributeName="gradientTransform"
@@ -330,8 +334,8 @@ function renderNeonGradientBadgeSvg(username, views) {
     </linearGradient>
 
     <filter id="neonGlowOuter" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur stdDeviation="8" result="blur1"/>
-      <feGaussianBlur stdDeviation="18" result="blur2"/>
+      <feGaussianBlur stdDeviation="6" result="blur1"/>
+      <feGaussianBlur stdDeviation="14" result="blur2"/>
       <feMerge>
         <feMergeNode in="blur2"/>
         <feMergeNode in="blur1"/>
@@ -340,7 +344,7 @@ function renderNeonGradientBadgeSvg(username, views) {
     </filter>
 
     <filter id="softTextGlow" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur stdDeviation="1.2" result="blur"/>
+      <feGaussianBlur stdDeviation="0.9" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
@@ -362,17 +366,26 @@ function renderNeonGradientBadgeSvg(username, views) {
     </mask>
 
     <linearGradient id="textGradientMain" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ff2f86"/>
-      <stop offset="100%" stop-color="#ffb6c8"/>
+      <stop offset="0%" stop-color="#ff4f93"/>
+      <stop offset="100%" stop-color="#f0b5c7"/>
     </linearGradient>
 
     <linearGradient id="textGradientSub" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#ff7ba0"/>
-      <stop offset="100%" stop-color="#9cfaf3"/>
+      <stop offset="0%" stop-color="#ff8aa9"/>
+      <stop offset="100%" stop-color="#9ef9f0"/>
     </linearGradient>
+
+    <clipPath id="contentClip">
+      <rect
+        x="${contentX}"
+        y="${contentY}"
+        width="${contentW}"
+        height="${contentH}"
+        rx="${radius - borderSize}"
+      />
+    </clipPath>
   </defs>
 
-  <!-- glow aura -->
   <rect
     x="${cardX}"
     y="${cardY}"
@@ -382,11 +395,10 @@ function renderNeonGradientBadgeSvg(username, views) {
     fill="none"
     stroke="url(#neonBorderBase)"
     stroke-width="${borderSize}"
-    opacity="0.45"
+    opacity="0.42"
     filter="url(#neonGlowOuter)"
   />
 
-  <!-- moving glow border -->
   <g mask="url(#borderMask)" filter="url(#neonGlowOuter)">
     <rect
       x="${cardX - 20}"
@@ -400,7 +412,6 @@ function renderNeonGradientBadgeSvg(username, views) {
     </rect>
   </g>
 
-  <!-- base border -->
   <rect
     x="${cardX}"
     y="${cardY}"
@@ -410,10 +421,9 @@ function renderNeonGradientBadgeSvg(username, views) {
     fill="none"
     stroke="url(#neonBorderBase)"
     stroke-width="${borderSize}"
-    opacity="0.95"
+    opacity="0.98"
   />
 
-  <!-- content area -->
   <rect
     x="${contentX}"
     y="${contentY}"
@@ -423,42 +433,46 @@ function renderNeonGradientBadgeSvg(username, views) {
     fill="#efeff2"
   />
 
-  <!-- divider -->
   <line
-    x1="${countSplitX}"
-    y1="${contentY + 10}"
-    x2="${countSplitX}"
-    y2="${contentY + contentH - 10}"
-    stroke="rgba(132,136,175,0.45)"
-    stroke-width="1.2"
+    x1="${splitX}"
+    y1="${contentY + 12}"
+    x2="${splitX}"
+    y2="${contentY + contentH - 12}"
+    stroke="rgba(132,136,175,0.42)"
+    stroke-width="1.1"
   />
 
-  <!-- text -->
-  <text
-    x="${leftWidth / 2}"
-    y="${height / 2 + 5}"
-    text-anchor="middle"
-    font-family="Arial, Helvetica, sans-serif"
-    font-size="24"
-    font-weight="900"
-    fill="url(#textGradientMain)"
-    filter="url(#softTextGlow)"
-  >
-    ${leftText}
-  </text>
+  <g clip-path="url(#contentClip)">
+    <text
+      x="${usernameCenterX}"
+      y="${textY}"
+      text-anchor="middle"
+      font-family="Arial, Helvetica, sans-serif"
+      font-size="16"
+      font-weight="900"
+      fill="url(#textGradientMain)"
+      filter="url(#softTextGlow)"
+      lengthAdjust="spacingAndGlyphs"
+      textLength="${leftWidth - 54}"
+    >
+      ${leftText}
+    </text>
 
-  <text
-    x="${countSplitX + (totalWidth - countSplitX) / 2}"
-    y="${height / 2 + 5}"
-    text-anchor="middle"
-    font-family="Arial, Helvetica, sans-serif"
-    font-size="24"
-    font-weight="900"
-    fill="url(#textGradientSub)"
-    filter="url(#softTextGlow)"
-  >
-    ${rightText}
-  </text>
+    <text
+      x="${countCenterX}"
+      y="${textY}"
+      text-anchor="middle"
+      font-family="Arial, Helvetica, sans-serif"
+      font-size="16"
+      font-weight="900"
+      fill="url(#textGradientSub)"
+      filter="url(#softTextGlow)"
+      lengthAdjust="spacingAndGlyphs"
+      textLength="${rightWidth - 28}"
+    >
+      ${rightText}
+    </text>
+  </g>
 </svg>
   `.trim();
 }
