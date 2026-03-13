@@ -288,28 +288,29 @@ function renderNeonGradientBadgeSvg(username, views) {
   const leftText = `${safeUsername} views`;
   const rightText = safeViews;
 
-  const leftWidth = Math.max(260, leftText.length * 10 + 56);
-  const rightWidth = Math.max(96, rightText.length * 12 + 34);
+  // maliit na size para kapareho ng retro
+  const leftWidth = Math.max(130, leftText.length * 8 + 28);
+  const rightWidth = Math.max(70, rightText.length * 9 + 20);
   const totalWidth = leftWidth + rightWidth;
-  const height = 84;
-  const radius = 18;
+  const height = 32;
+  const radius = 8;
   const borderSize = 2;
 
-  const cardX = 8;
-  const cardY = 8;
-  const cardW = totalWidth - 16;
-  const cardH = height - 16;
+  const cardX = 2;
+  const cardY = 2;
+  const cardW = totalWidth - 4;
+  const cardH = height - 4;
 
   const contentX = cardX + borderSize;
   const contentY = cardY + borderSize;
   const contentW = cardW - borderSize * 2;
   const contentH = cardH - borderSize * 2;
 
-  const splitX = leftWidth + 8;
+  const splitX = leftWidth;
 
-  const usernameCenterX = leftWidth / 2 + 4;
-  const countCenterX = splitX + (totalWidth - splitX) / 2 - 2;
-  const textY = height / 2 + 8;
+  const usernameCenterX = leftWidth / 2;
+  const countCenterX = leftWidth + rightWidth / 2;
+  const textY = 21;
 
   return `
 <svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${height}" viewBox="0 0 ${totalWidth} ${height}" role="img" aria-label="${safeUsername} views: ${safeViews}">
@@ -333,9 +334,9 @@ function renderNeonGradientBadgeSvg(username, views) {
       />
     </linearGradient>
 
-    <filter id="neonGlowOuter" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur stdDeviation="6" result="blur1"/>
-      <feGaussianBlur stdDeviation="14" result="blur2"/>
+    <filter id="neonGlowOuter" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="3" result="blur1"/>
+      <feGaussianBlur stdDeviation="6" result="blur2"/>
       <feMerge>
         <feMergeNode in="blur2"/>
         <feMergeNode in="blur1"/>
@@ -343,8 +344,8 @@ function renderNeonGradientBadgeSvg(username, views) {
       </feMerge>
     </filter>
 
-    <filter id="softTextGlow" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur stdDeviation="0.9" result="blur"/>
+    <filter id="softTextGlow" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="0.7" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
@@ -386,6 +387,8 @@ function renderNeonGradientBadgeSvg(username, views) {
     </clipPath>
   </defs>
 
+  <!-- transparent background -->
+
   <rect
     x="${cardX}"
     y="${cardY}"
@@ -395,18 +398,18 @@ function renderNeonGradientBadgeSvg(username, views) {
     fill="none"
     stroke="url(#neonBorderBase)"
     stroke-width="${borderSize}"
-    opacity="0.42"
+    opacity="0.35"
     filter="url(#neonGlowOuter)"
   />
 
   <g mask="url(#borderMask)" filter="url(#neonGlowOuter)">
     <rect
-      x="${cardX - 20}"
+      x="${cardX - 8}"
       y="-${height}"
-      width="${cardW + 40}"
+      width="${cardW + 16}"
       height="${height * 3}"
       fill="url(#neonBorderMove)"
-      opacity="0.95"
+      opacity="0.9"
     >
       <animate attributeName="y" from="-${height}" to="0" dur="2.8s" repeatCount="indefinite"/>
     </rect>
@@ -421,7 +424,7 @@ function renderNeonGradientBadgeSvg(username, views) {
     fill="none"
     stroke="url(#neonBorderBase)"
     stroke-width="${borderSize}"
-    opacity="0.98"
+    opacity="0.95"
   />
 
   <rect
@@ -435,11 +438,11 @@ function renderNeonGradientBadgeSvg(username, views) {
 
   <line
     x1="${splitX}"
-    y1="${contentY + 12}"
+    y1="${contentY + 4}"
     x2="${splitX}"
-    y2="${contentY + contentH - 12}"
+    y2="${contentY + contentH - 4}"
     stroke="rgba(132,136,175,0.42)"
-    stroke-width="1.1"
+    stroke-width="1"
   />
 
   <g clip-path="url(#contentClip)">
@@ -448,12 +451,12 @@ function renderNeonGradientBadgeSvg(username, views) {
       y="${textY}"
       text-anchor="middle"
       font-family="Arial, Helvetica, sans-serif"
-      font-size="16"
+      font-size="12"
       font-weight="900"
       fill="url(#textGradientMain)"
       filter="url(#softTextGlow)"
       lengthAdjust="spacingAndGlyphs"
-      textLength="${leftWidth - 54}"
+      textLength="${leftWidth - 18}"
     >
       ${leftText}
     </text>
@@ -463,7 +466,7 @@ function renderNeonGradientBadgeSvg(username, views) {
       y="${textY}"
       text-anchor="middle"
       font-family="Arial, Helvetica, sans-serif"
-      font-size="15"
+      font-size="12"
       font-weight="900"
       fill="url(#textGradientSub)"
       filter="url(#softTextGlow)"
