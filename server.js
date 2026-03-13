@@ -281,60 +281,57 @@ function renderClassicBadgeSvg(username, views) {
   `.trim();
 }
 
-function renderElectricBadgeSvg(username, views) {
+function renderNeonGradientBadgeSvg(username, views) {
   const safeUsername = escapeXml(username);
   const safeViews = escapeXml(String(views));
 
-  const leftText = `${safeUsername} views`.toUpperCase();
+  const leftText = `${safeUsername} views`;
   const rightText = safeViews;
 
-  const leftWidth = Math.max(230, leftText.length * 8 + 42);
-  const rightWidth = Math.max(96, rightText.length * 10 + 30);
+  const leftWidth = Math.max(230, leftText.length * 8 + 36);
+  const rightWidth = Math.max(90, rightText.length * 10 + 28);
   const totalWidth = leftWidth + rightWidth;
-  const height = 78;
+  const height = 76;
+  const radius = 18;
+  const borderSize = 2;
 
-  const outerX = 6;
-  const outerY = 6;
-  const outerW = totalWidth - 12;
-  const outerH = height - 12;
+  const cardX = 6;
+  const cardY = 6;
+  const cardW = totalWidth - 12;
+  const cardH = height - 12;
 
-  const innerX = 26;
-  const innerY = 18;
-  const innerW = totalWidth - 52;
-  const innerH = 42;
+  const contentX = cardX + borderSize;
+  const contentY = cardY + borderSize;
+  const contentW = cardW - borderSize * 2;
+  const contentH = cardH - borderSize * 2;
 
-  const dividerX = leftWidth + 8;
-
-  const textBoxX = 42;
-  const textBoxY = 31;
-  const textBoxW = leftWidth - 92;
-  const textBoxH = 18;
-
-  const countBoxX = leftWidth + 28;
-  const countBoxY = 31;
-  const countBoxW = rightWidth - 52;
-  const countBoxH = 18;
+  const countSplitX = leftWidth + 6;
 
   return `
 <svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${height}" viewBox="0 0 ${totalWidth} ${height}" role="img" aria-label="${safeUsername} views: ${safeViews}">
   <defs>
-    <linearGradient id="electricBase" x1="0%" y1="50%" x2="100%" y2="50%">
-      <stop offset="0%" stop-color="#ff00cc"/>
-      <stop offset="45%" stop-color="#a855f7"/>
-      <stop offset="100%" stop-color="#00a6ff"/>
+    <linearGradient id="neonBorderBase" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff2f86"/>
+      <stop offset="100%" stop-color="#00fff1"/>
     </linearGradient>
 
-    <linearGradient id="electricSweep" x1="0%" y1="50%" x2="100%" y2="50%">
-      <stop offset="0%" stop-color="#ff00cc"/>
-      <stop offset="25%" stop-color="#f472ff"/>
-      <stop offset="50%" stop-color="#b388ff"/>
-      <stop offset="75%" stop-color="#67e8f9"/>
-      <stop offset="100%" stop-color="#00a6ff"/>
+    <linearGradient id="neonBorderMove" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff2f86"/>
+      <stop offset="40%" stop-color="#ff7fa7"/>
+      <stop offset="100%" stop-color="#00fff1"/>
+      <animateTransform
+        attributeName="gradientTransform"
+        type="translate"
+        from="0 -${height}"
+        to="0 ${height}"
+        dur="2.8s"
+        repeatCount="indefinite"
+      />
     </linearGradient>
 
-    <filter id="electricGlow" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur stdDeviation="3" result="blur1"/>
-      <feGaussianBlur stdDeviation="8" result="blur2"/>
+    <filter id="neonGlowOuter" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="8" result="blur1"/>
+      <feGaussianBlur stdDeviation="18" result="blur2"/>
       <feMerge>
         <feMergeNode in="blur2"/>
         <feMergeNode in="blur1"/>
@@ -342,183 +339,123 @@ function renderElectricBadgeSvg(username, views) {
       </feMerge>
     </filter>
 
-    <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur stdDeviation="1.5" result="blur1"/>
+    <filter id="softTextGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="1.2" result="blur"/>
       <feMerge>
-        <feMergeNode in="blur1"/>
+        <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
 
-    <filter id="electricDisplace" x="-20%" y="-20%" width="140%" height="140%">
-      <feTurbulence
-        type="turbulence"
-        baseFrequency="0.02"
-        numOctaves="2"
-        seed="2"
-        result="noise"
-      >
-        <animate attributeName="baseFrequency" values="0.018;0.028;0.018" dur="1.8s" repeatCount="indefinite"/>
-      </feTurbulence>
-      <feDisplacementMap
-        in="SourceGraphic"
-        in2="noise"
-        scale="2.8"
-        xChannelSelector="R"
-        yChannelSelector="G"
-      />
-    </filter>
-
-    <mask id="electricBorderMask">
+    <mask id="borderMask">
       <rect width="${totalWidth}" height="${height}" fill="black"/>
       <rect
-        x="${outerX}"
-        y="${outerY}"
-        width="${outerW}"
-        height="${outerH}"
+        x="${cardX}"
+        y="${cardY}"
+        width="${cardW}"
+        height="${cardH}"
+        rx="${radius}"
         fill="none"
         stroke="white"
-        stroke-width="10"
+        stroke-width="${borderSize * 2}"
       />
     </mask>
 
-    <clipPath id="outerClip">
-      <rect x="${outerX}" y="${outerY}" width="${outerW}" height="${outerH}" />
-    </clipPath>
+    <linearGradient id="textGradientMain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff2f86"/>
+      <stop offset="100%" stop-color="#ffb6c8"/>
+    </linearGradient>
+
+    <linearGradient id="textGradientSub" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff7ba0"/>
+      <stop offset="100%" stop-color="#9cfaf3"/>
+    </linearGradient>
   </defs>
 
-  <!-- dark background -->
-  <rect x="${outerX}" y="${outerY}" width="${outerW}" height="${outerH}" fill="#06080f"/>
-
-  <!-- base glow border -->
+  <!-- glow aura -->
   <rect
-    x="${outerX}"
-    y="${outerY}"
-    width="${outerW}"
-    height="${outerH}"
+    x="${cardX}"
+    y="${cardY}"
+    width="${cardW}"
+    height="${cardH}"
+    rx="${radius}"
     fill="none"
-    stroke="url(#electricBase)"
-    stroke-width="10"
-    opacity="0.55"
-    filter="url(#electricGlow)"
+    stroke="url(#neonBorderBase)"
+    stroke-width="${borderSize}"
+    opacity="0.45"
+    filter="url(#neonGlowOuter)"
   />
 
-  <!-- moving electric sweep on border -->
-  <g mask="url(#electricBorderMask)" filter="url(#electricGlow)">
-    <rect x="-${totalWidth}" y="0" width="${totalWidth * 3}" height="${height}" fill="url(#electricSweep)" opacity="0.95">
-      <animateTransform
-        attributeName="transform"
-        type="rotate"
-        from="0 ${totalWidth / 2} ${height / 2}"
-        to="360 ${totalWidth / 2} ${height / 2}"
-        dur="2.5s"
-        repeatCount="indefinite"
-      />
-    </rect>
-    <rect x="-${totalWidth}" y="0" width="${totalWidth * 3}" height="${height}" fill="url(#electricSweep)" opacity="0.9" filter="url(#electricDisplace)">
-      <animate attributeName="x" values="-${totalWidth};0;-${totalWidth}" dur="1.8s" repeatCount="indefinite"/>
+  <!-- moving glow border -->
+  <g mask="url(#borderMask)" filter="url(#neonGlowOuter)">
+    <rect
+      x="${cardX - 20}"
+      y="-${height}"
+      width="${cardW + 40}"
+      height="${height * 3}"
+      fill="url(#neonBorderMove)"
+      opacity="0.95"
+    >
+      <animate attributeName="y" from="-${height}" to="0" dur="2.8s" repeatCount="indefinite"/>
     </rect>
   </g>
 
-  <!-- inner card -->
+  <!-- base border -->
   <rect
-    x="${innerX}"
-    y="${innerY}"
-    width="${innerW}"
-    height="${innerH}"
-    fill="rgba(255,255,255,0.05)"
-    stroke="rgba(220,220,255,0.75)"
-    stroke-width="1.6"
-    filter="url(#softGlow)"
+    x="${cardX}"
+    y="${cardY}"
+    width="${cardW}"
+    height="${cardH}"
+    rx="${radius}"
+    fill="none"
+    stroke="url(#neonBorderBase)"
+    stroke-width="${borderSize}"
+    opacity="0.95"
+  />
+
+  <!-- content area -->
+  <rect
+    x="${contentX}"
+    y="${contentY}"
+    width="${contentW}"
+    height="${contentH}"
+    rx="${radius - borderSize}"
+    fill="#efeff2"
   />
 
   <!-- divider -->
   <line
-    x1="${dividerX}"
-    y1="${innerY}"
-    x2="${dividerX}"
-    y2="${innerY + innerH}"
-    stroke="rgba(220,220,255,0.85)"
-    stroke-width="2"
-    filter="url(#softGlow)"
+    x1="${countSplitX}"
+    y1="${contentY + 10}"
+    x2="${countSplitX}"
+    y2="${contentY + contentH - 10}"
+    stroke="rgba(132,136,175,0.45)"
+    stroke-width="1.2"
   />
 
-  <!-- text boxes -->
-  <rect
-    x="${textBoxX}"
-    y="${textBoxY}"
-    width="${textBoxW}"
-    height="${textBoxH}"
-    fill="#04060c"
-    stroke="rgba(255,255,255,0.12)"
-    stroke-width="1"
-  />
-
-  <rect
-    x="${countBoxX}"
-    y="${countBoxY}"
-    width="${countBoxW}"
-    height="${countBoxH}"
-    fill="#04060c"
-    stroke="rgba(255,255,255,0.12)"
-    stroke-width="1"
-  />
-
-  <!-- username text -->
-  <g filter="url(#softGlow)">
-    <text
-      x="${textBoxX + textBoxW / 2}"
-      y="${textBoxY + 12.5}"
-      text-anchor="middle"
-      font-family="Arial, Helvetica, sans-serif"
-      font-size="10"
-      font-weight="900"
-      fill="#ffffff"
-      letter-spacing="0.4"
-    >
-      ${leftText}
-    </text>
-
-    <text
-      x="${textBoxX + textBoxW / 2 + 1.2}"
-      y="${textBoxY + 12.5}"
-      text-anchor="middle"
-      font-family="Arial, Helvetica, sans-serif"
-      font-size="10"
-      font-weight="900"
-      fill="#00eaff"
-      opacity="0.7"
-      letter-spacing="0.4"
-    >
-      ${leftText}
-    </text>
-
-    <text
-      x="${textBoxX + textBoxW / 2 - 1.2}"
-      y="${textBoxY + 12.5}"
-      text-anchor="middle"
-      font-family="Arial, Helvetica, sans-serif"
-      font-size="10"
-      font-weight="900"
-      fill="#ff00cc"
-      opacity="0.7"
-      letter-spacing="0.4"
-    >
-      ${leftText}
-    </text>
-  </g>
-
-  <!-- count text -->
+  <!-- text -->
   <text
-    x="${countBoxX + countBoxW / 2}"
-    y="${countBoxY + 12.5}"
+    x="${leftWidth / 2}"
+    y="${height / 2 + 5}"
     text-anchor="middle"
     font-family="Arial, Helvetica, sans-serif"
-    font-size="11"
+    font-size="24"
     font-weight="900"
-    fill="#ffffff"
-    filter="url(#softGlow)"
-    letter-spacing="0.4"
+    fill="url(#textGradientMain)"
+    filter="url(#softTextGlow)"
+  >
+    ${leftText}
+  </text>
+
+  <text
+    x="${countSplitX + (totalWidth - countSplitX) / 2}"
+    y="${height / 2 + 5}"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="24"
+    font-weight="900"
+    fill="url(#textGradientSub)"
+    filter="url(#softTextGlow)"
   >
     ${rightText}
   </text>
@@ -528,14 +465,21 @@ function renderElectricBadgeSvg(username, views) {
 
 function normalizeTheme(theme) {
   const t = String(theme || "retro").toLowerCase();
-  if (t === "neon" || t === "neonline" || t === "neon-line") return "neon-line";
+  if (
+    t === "neon" ||
+    t === "neonline" ||
+    t === "neon-line" ||
+    t === "neon-gradient"
+  ) {
+    return "neon-gradient";
+  }
   return "retro";
 }
 
 function renderBadgeSvg(username, views, theme = "retro") {
   const normalizedTheme = normalizeTheme(theme);
-  if (normalizedTheme === "neon-line") {
-    return renderElectricBadgeSvg(username, views);
+  if (normalizedTheme === "neon-gradient") {
+    return renderNeonGradientBadgeSvg(username, views);
   }
   return renderClassicBadgeSvg(username, views);
 }
@@ -552,7 +496,7 @@ app.get("/", (_req, res) => {
       top: `${BASE_URL}/api/stats/top`,
       health: `${BASE_URL}/api/health`,
     },
-    themes: ["retro", "neon-line"],
+    themes: ["retro", "neon-gradient"],
   });
 });
 
