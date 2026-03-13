@@ -291,91 +291,187 @@ function renderNeonLineBadgeSvg(username, views) {
   const leftWidth = Math.max(180, leftText.length * 8 + 34);
   const rightWidth = Math.max(82, rightText.length * 10 + 28);
   const totalWidth = leftWidth + rightWidth;
-  const height = 40;
-  const radius = 12;
+  const height = 44;
+  const radius = 16;
+  const strokeInset = 3;
+  const strokeWidth = 4;
+  const innerX = 7;
+  const innerY = 7;
+  const innerWidth = totalWidth - 14;
+  const innerHeight = height - 14;
 
   return `
 <svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${height}" viewBox="0 0 ${totalWidth} ${height}" role="img" aria-label="${safeUsername} views: ${safeViews}">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#06080d"/>
-      <stop offset="100%" stop-color="#10131a"/>
+    <linearGradient id="bgPanel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#08111d"/>
+      <stop offset="100%" stop-color="#05070d"/>
     </linearGradient>
 
-    <linearGradient id="textGlow" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#cbd5e1"/>
+    <linearGradient id="innerGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(34,211,238,0.10)"/>
+      <stop offset="100%" stop-color="rgba(217,70,239,0.10)"/>
     </linearGradient>
 
-    <linearGradient id="ledRainbow" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#ff3131"/>
-      <stop offset="12.5%" stop-color="#ff8c00"/>
-      <stop offset="25%" stop-color="#ffe600"/>
-      <stop offset="37.5%" stop-color="#5cff00"/>
-      <stop offset="50%" stop-color="#00ff95"/>
-      <stop offset="62.5%" stop-color="#00eaff"/>
-      <stop offset="75%" stop-color="#1d7bff"/>
-      <stop offset="87.5%" stop-color="#7a3cff"/>
-      <stop offset="100%" stop-color="#ff2dbe"/>
+    <linearGradient id="neonBorder" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d946ef"/>
+      <stop offset="18%" stop-color="#c026d3"/>
+      <stop offset="38%" stop-color="#7c3aed"/>
+      <stop offset="58%" stop-color="#22d3ee"/>
+      <stop offset="78%" stop-color="#67e8f9"/>
+      <stop offset="100%" stop-color="#d946ef"/>
       <animateTransform
         attributeName="gradientTransform"
-        type="translate"
-        from="-160 0"
-        to="160 0"
-        dur="1.2s"
+        type="rotate"
+        from="0 ${totalWidth / 2} ${height / 2}"
+        to="360 ${totalWidth / 2} ${height / 2}"
+        dur="3.4s"
         repeatCount="indefinite"
       />
     </linearGradient>
 
-    <filter id="ledGlow" x="-80%" y="-300%" width="260%" height="700%">
-      <feGaussianBlur stdDeviation="1.8" result="blur1"/>
-      <feColorMatrix
-        in="blur1"
-        type="matrix"
-        values="
-          1 0 0 0 0
-          0 1 0 0 0
-          0 0 1 0 0
-          0 0 0 20 -8"
-        result="glow1"
-      />
-      <feGaussianBlur stdDeviation="4.5" result="blur2"/>
+    <filter id="outerNeon" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="2.8" result="blur1"/>
+      <feGaussianBlur stdDeviation="6.5" result="blur2"/>
       <feMerge>
         <feMergeNode in="blur2"/>
-        <feMergeNode in="glow1"/>
+        <feMergeNode in="blur1"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
 
-    <pattern id="ledDots" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
-      <circle cx="4" cy="4" r="1.6" fill="white" opacity="0.95" />
-    </pattern>
+    <filter id="softTextGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="1.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
 
-    <mask id="lineMask">
+    <mask id="movingBorderMask">
       <rect width="${totalWidth}" height="${height}" fill="black"/>
-      <rect x="12" y="9" width="${totalWidth - 24}" height="8" rx="4" fill="white"/>
-      <rect x="12" y="23" width="${totalWidth - 24}" height="4" rx="2" fill="white" opacity="0.45"/>
+      <rect
+        x="${strokeInset}"
+        y="${strokeInset}"
+        width="${totalWidth - strokeInset * 2}"
+        height="${height - strokeInset * 2}"
+        rx="${radius}"
+        fill="none"
+        stroke="white"
+        stroke-width="${strokeWidth}"
+      />
     </mask>
+
+    <linearGradient id="lineSweep" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d946ef"/>
+      <stop offset="22%" stop-color="#c026d3"/>
+      <stop offset="50%" stop-color="#22d3ee"/>
+      <stop offset="78%" stop-color="#67e8f9"/>
+      <stop offset="100%" stop-color="#d946ef"/>
+      <animateTransform
+        attributeName="gradientTransform"
+        type="translate"
+        from="-${totalWidth} 0"
+        to="${totalWidth} 0"
+        dur="2.3s"
+        repeatCount="indefinite"
+      />
+    </linearGradient>
+
+    <pattern id="tinyLights" x="0" y="0" width="9" height="9" patternUnits="userSpaceOnUse">
+      <circle cx="4.5" cy="4.5" r="1.15" fill="white" opacity="0.9"/>
+    </pattern>
   </defs>
 
-  <rect x="1.5" y="1.5" width="${totalWidth - 3}" height="${height - 3}" rx="${radius}" fill="url(#bg)" stroke="#151922" stroke-width="2"/>
+  <rect
+    x="${strokeInset}"
+    y="${strokeInset}"
+    width="${totalWidth - strokeInset * 2}"
+    height="${height - strokeInset * 2}"
+    rx="${radius}"
+    fill="url(#bgPanel)"
+  />
 
-  <rect x="10" y="7" width="${totalWidth - 20}" height="12" rx="6" fill="#0b0f16"/>
-  <rect x="10" y="22" width="${totalWidth - 20}" height="6" rx="3" fill="#0b0f16"/>
+  <rect
+    x="${innerX}"
+    y="${innerY}"
+    width="${innerWidth}"
+    height="${innerHeight}"
+    rx="${radius - 5}"
+    fill="rgba(255,255,255,0.02)"
+  />
 
-  <g mask="url(#lineMask)" filter="url(#ledGlow)">
-    <rect x="0" y="0" width="${totalWidth}" height="${height}" fill="url(#ledRainbow)"/>
-    <rect x="0" y="0" width="${totalWidth}" height="${height}" fill="url(#ledDots)" opacity="0.85"/>
+  <rect
+    x="${innerX}"
+    y="${innerY}"
+    width="${innerWidth}"
+    height="${innerHeight}"
+    rx="${radius - 5}"
+    fill="url(#innerGlow)"
+    opacity="0.7"
+  />
+
+  <rect
+    x="${strokeInset}"
+    y="${strokeInset}"
+    width="${totalWidth - strokeInset * 2}"
+    height="${height - strokeInset * 2}"
+    rx="${radius}"
+    fill="none"
+    stroke="url(#neonBorder)"
+    stroke-width="${strokeWidth}"
+    filter="url(#outerNeon)"
+    opacity="0.95"
+  >
+    <animate attributeName="stroke-dasharray" values="22 10 70 12;60 12 22 10;22 10 70 12" dur="2.8s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-dashoffset" from="0" to="-160" dur="2.8s" repeatCount="indefinite"/>
+  </rect>
+
+  <g mask="url(#movingBorderMask)" filter="url(#outerNeon)" opacity="0.95">
+    <rect x="-${totalWidth}" y="0" width="${totalWidth * 3}" height="${height}" fill="url(#lineSweep)">
+      <animate attributeName="x" from="-${totalWidth}" to="0" dur="2.3s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="-${totalWidth}" y="0" width="${totalWidth * 3}" height="${height}" fill="url(#tinyLights)" opacity="0.85">
+      <animate attributeName="x" from="-${totalWidth}" to="0" dur="2.3s" repeatCount="indefinite"/>
+    </rect>
   </g>
 
-  <g>
-    <text x="${leftWidth / 2}" y="34" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="900" fill="url(#textGlow)">
-      ${leftText}
-    </text>
-    <text x="${leftWidth + rightWidth / 2}" y="34" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="900" fill="#ffffff">
-      ${rightText}
-    </text>
-  </g>
+  <rect
+    x="${innerX}"
+    y="${innerY}"
+    width="${innerWidth}"
+    height="${innerHeight}"
+    rx="${radius - 5}"
+    fill="none"
+    stroke="rgba(255,255,255,0.10)"
+    stroke-width="1"
+  />
+
+  <text
+    x="${leftWidth / 2}"
+    y="29"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="14"
+    font-weight="900"
+    fill="#f8fafc"
+    filter="url(#softTextGlow)"
+  >
+    ${leftText}
+  </text>
+
+  <text
+    x="${leftWidth + rightWidth / 2}"
+    y="29"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="14"
+    font-weight="900"
+    fill="#ffffff"
+    filter="url(#softTextGlow)"
+  >
+    ${rightText}
+  </text>
 </svg>
   `.trim();
 }
