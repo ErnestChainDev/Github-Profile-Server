@@ -281,62 +281,60 @@ function renderClassicBadgeSvg(username, views) {
   `.trim();
 }
 
-function renderNeonLineBadgeSvg(username, views) {
+function renderElectricBadgeSvg(username, views) {
   const safeUsername = escapeXml(username);
   const safeViews = escapeXml(String(views));
 
-  const leftText = `${safeUsername} views`;
+  const leftText = `${safeUsername} views`.toUpperCase();
   const rightText = safeViews;
 
-  const leftWidth = Math.max(220, leftText.length * 8 + 40);
-  const rightWidth = Math.max(90, rightText.length * 10 + 30);
+  const leftWidth = Math.max(230, leftText.length * 8 + 42);
+  const rightWidth = Math.max(96, rightText.length * 10 + 30);
   const totalWidth = leftWidth + rightWidth;
-  const height = 76;
-  const outerStroke = 10;
+  const height = 78;
 
-  const panelX = 24;
-  const panelY = 18;
-  const panelWidth = totalWidth - 48;
-  const panelHeight = 40;
+  const outerX = 6;
+  const outerY = 6;
+  const outerW = totalWidth - 12;
+  const outerH = height - 12;
 
-  const dividerX = leftWidth + 6;
-  const textBoxX = 38;
-  const textBoxY = 30;
-  const textBoxWidth = leftWidth - 86;
-  const textBoxHeight = 18;
+  const innerX = 26;
+  const innerY = 18;
+  const innerW = totalWidth - 52;
+  const innerH = 42;
 
-  const countBoxX = leftWidth + 24;
-  const countBoxY = 30;
-  const countBoxWidth = rightWidth - 46;
-  const countBoxHeight = 18;
+  const dividerX = leftWidth + 8;
+
+  const textBoxX = 42;
+  const textBoxY = 31;
+  const textBoxW = leftWidth - 92;
+  const textBoxH = 18;
+
+  const countBoxX = leftWidth + 28;
+  const countBoxY = 31;
+  const countBoxW = rightWidth - 52;
+  const countBoxH = 18;
 
   return `
 <svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${height}" viewBox="0 0 ${totalWidth} ${height}" role="img" aria-label="${safeUsername} views: ${safeViews}">
   <defs>
-    <linearGradient id="outerPanel" x1="0%" y1="50%" x2="100%" y2="50%">
+    <linearGradient id="electricBase" x1="0%" y1="50%" x2="100%" y2="50%">
       <stop offset="0%" stop-color="#ff00cc"/>
-      <stop offset="52%" stop-color="#8b5cf6"/>
+      <stop offset="45%" stop-color="#a855f7"/>
       <stop offset="100%" stop-color="#00a6ff"/>
     </linearGradient>
 
-    <linearGradient id="sweepGradient" x1="0%" y1="50%" x2="100%" y2="50%">
+    <linearGradient id="electricSweep" x1="0%" y1="50%" x2="100%" y2="50%">
       <stop offset="0%" stop-color="#ff00cc"/>
-      <stop offset="35%" stop-color="#d946ef"/>
-      <stop offset="65%" stop-color="#60a5fa"/>
-      <stop offset="100%" stop-color="#00d4ff"/>
-      <animateTransform
-        attributeName="gradientTransform"
-        type="rotate"
-        from="0 ${totalWidth / 2} ${height / 2}"
-        to="360 ${totalWidth / 2} ${height / 2}"
-        dur="3s"
-        repeatCount="indefinite"
-      />
+      <stop offset="25%" stop-color="#f472ff"/>
+      <stop offset="50%" stop-color="#b388ff"/>
+      <stop offset="75%" stop-color="#67e8f9"/>
+      <stop offset="100%" stop-color="#00a6ff"/>
     </linearGradient>
 
-    <filter id="outerGlow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="4" result="blur1"/>
-      <feGaussianBlur stdDeviation="9" result="blur2"/>
+    <filter id="electricGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="3" result="blur1"/>
+      <feGaussianBlur stdDeviation="8" result="blur2"/>
       <feMerge>
         <feMergeNode in="blur2"/>
         <feMergeNode in="blur1"/>
@@ -344,134 +342,182 @@ function renderNeonLineBadgeSvg(username, views) {
       </feMerge>
     </filter>
 
-    <filter id="innerGlow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="2" result="blur1"/>
+    <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="1.5" result="blur1"/>
       <feMerge>
         <feMergeNode in="blur1"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
 
-    <filter id="textGlow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="1.2" result="blur1"/>
-      <feMerge>
-        <feMergeNode in="blur1"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
+    <filter id="electricDisplace" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence
+        type="turbulence"
+        baseFrequency="0.02"
+        numOctaves="2"
+        seed="2"
+        result="noise"
+      >
+        <animate attributeName="baseFrequency" values="0.018;0.028;0.018" dur="1.8s" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="noise"
+        scale="2.8"
+        xChannelSelector="R"
+        yChannelSelector="G"
+      />
     </filter>
 
-    <mask id="borderMask">
+    <mask id="electricBorderMask">
       <rect width="${totalWidth}" height="${height}" fill="black"/>
       <rect
-        x="${outerStroke / 2}"
-        y="${outerStroke / 2}"
-        width="${totalWidth - outerStroke}"
-        height="${height - outerStroke}"
+        x="${outerX}"
+        y="${outerY}"
+        width="${outerW}"
+        height="${outerH}"
         fill="none"
         stroke="white"
-        stroke-width="${outerStroke}"
+        stroke-width="10"
       />
     </mask>
+
+    <clipPath id="outerClip">
+      <rect x="${outerX}" y="${outerY}" width="${outerW}" height="${outerH}" />
+    </clipPath>
   </defs>
 
-  <rect
-    x="${outerStroke / 2}"
-    y="${outerStroke / 2}"
-    width="${totalWidth - outerStroke}"
-    height="${height - outerStroke}"
-    fill="rgba(8,10,20,0.92)"
-  />
+  <!-- dark background -->
+  <rect x="${outerX}" y="${outerY}" width="${outerW}" height="${outerH}" fill="#06080f"/>
 
+  <!-- base glow border -->
   <rect
-    x="${outerStroke / 2}"
-    y="${outerStroke / 2}"
-    width="${totalWidth - outerStroke}"
-    height="${height - outerStroke}"
+    x="${outerX}"
+    y="${outerY}"
+    width="${outerW}"
+    height="${outerH}"
     fill="none"
-    stroke="url(#outerPanel)"
-    stroke-width="${outerStroke}"
+    stroke="url(#electricBase)"
+    stroke-width="10"
     opacity="0.55"
-    filter="url(#outerGlow)"
+    filter="url(#electricGlow)"
   />
 
-  <g mask="url(#borderMask)">
-    <rect
-      x="-${totalWidth}"
-      y="0"
-      width="${totalWidth * 3}"
-      height="${height}"
-      fill="url(#sweepGradient)"
-      opacity="0.95"
-      filter="url(#outerGlow)"
-    >
-      <animate attributeName="x" from="-${totalWidth}" to="0" dur="2.2s" repeatCount="indefinite"/>
+  <!-- moving electric sweep on border -->
+  <g mask="url(#electricBorderMask)" filter="url(#electricGlow)">
+    <rect x="-${totalWidth}" y="0" width="${totalWidth * 3}" height="${height}" fill="url(#electricSweep)" opacity="0.95">
+      <animateTransform
+        attributeName="transform"
+        type="rotate"
+        from="0 ${totalWidth / 2} ${height / 2}"
+        to="360 ${totalWidth / 2} ${height / 2}"
+        dur="2.5s"
+        repeatCount="indefinite"
+      />
+    </rect>
+    <rect x="-${totalWidth}" y="0" width="${totalWidth * 3}" height="${height}" fill="url(#electricSweep)" opacity="0.9" filter="url(#electricDisplace)">
+      <animate attributeName="x" values="-${totalWidth};0;-${totalWidth}" dur="1.8s" repeatCount="indefinite"/>
     </rect>
   </g>
 
+  <!-- inner card -->
   <rect
-    x="${panelX}"
-    y="${panelY}"
-    width="${panelWidth}"
-    height="${panelHeight}"
+    x="${innerX}"
+    y="${innerY}"
+    width="${innerW}"
+    height="${innerH}"
     fill="rgba(255,255,255,0.05)"
-    stroke="rgba(255,255,255,0.38)"
-    stroke-width="1.5"
-    filter="url(#innerGlow)"
+    stroke="rgba(220,220,255,0.75)"
+    stroke-width="1.6"
+    filter="url(#softGlow)"
   />
 
+  <!-- divider -->
   <line
     x1="${dividerX}"
-    y1="${panelY}"
+    y1="${innerY}"
     x2="${dividerX}"
-    y2="${panelY + panelHeight}"
-    stroke="rgba(255,255,255,0.65)"
+    y2="${innerY + innerH}"
+    stroke="rgba(220,220,255,0.85)"
     stroke-width="2"
-    filter="url(#innerGlow)"
+    filter="url(#softGlow)"
   />
 
+  <!-- text boxes -->
   <rect
     x="${textBoxX}"
     y="${textBoxY}"
-    width="${textBoxWidth}"
-    height="${textBoxHeight}"
-    fill="#07090f"
-    stroke="rgba(0,255,255,0.22)"
+    width="${textBoxW}"
+    height="${textBoxH}"
+    fill="#04060c"
+    stroke="rgba(255,255,255,0.12)"
     stroke-width="1"
   />
 
   <rect
     x="${countBoxX}"
     y="${countBoxY}"
-    width="${countBoxWidth}"
-    height="${countBoxHeight}"
-    fill="#07090f"
-    stroke="rgba(255,255,255,0.22)"
+    width="${countBoxW}"
+    height="${countBoxH}"
+    fill="#04060c"
+    stroke="rgba(255,255,255,0.12)"
     stroke-width="1"
   />
 
-  <text
-    x="${textBoxX + textBoxWidth / 2}"
-    y="${textBoxY + 13}"
-    text-anchor="middle"
-    font-family="Arial, Helvetica, sans-serif"
-    font-size="10"
-    font-weight="900"
-    fill="#f5f3ff"
-    filter="url(#textGlow)"
-    letter-spacing="0.4"
-  >
-    ${leftText.toUpperCase()}
-  </text>
+  <!-- username text -->
+  <g filter="url(#softGlow)">
+    <text
+      x="${textBoxX + textBoxW / 2}"
+      y="${textBoxY + 12.5}"
+      text-anchor="middle"
+      font-family="Arial, Helvetica, sans-serif"
+      font-size="10"
+      font-weight="900"
+      fill="#ffffff"
+      letter-spacing="0.4"
+    >
+      ${leftText}
+    </text>
 
+    <text
+      x="${textBoxX + textBoxW / 2 + 1.2}"
+      y="${textBoxY + 12.5}"
+      text-anchor="middle"
+      font-family="Arial, Helvetica, sans-serif"
+      font-size="10"
+      font-weight="900"
+      fill="#00eaff"
+      opacity="0.7"
+      letter-spacing="0.4"
+    >
+      ${leftText}
+    </text>
+
+    <text
+      x="${textBoxX + textBoxW / 2 - 1.2}"
+      y="${textBoxY + 12.5}"
+      text-anchor="middle"
+      font-family="Arial, Helvetica, sans-serif"
+      font-size="10"
+      font-weight="900"
+      fill="#ff00cc"
+      opacity="0.7"
+      letter-spacing="0.4"
+    >
+      ${leftText}
+    </text>
+  </g>
+
+  <!-- count text -->
   <text
-    x="${countBoxX + countBoxWidth / 2}"
-    y="${countBoxY + 13}"
+    x="${countBoxX + countBoxW / 2}"
+    y="${countBoxY + 12.5}"
     text-anchor="middle"
     font-family="Arial, Helvetica, sans-serif"
     font-size="11"
     font-weight="900"
     fill="#ffffff"
-    filter="url(#textGlow)"
+    filter="url(#softGlow)"
     letter-spacing="0.4"
   >
     ${rightText}
@@ -489,7 +535,7 @@ function normalizeTheme(theme) {
 function renderBadgeSvg(username, views, theme = "retro") {
   const normalizedTheme = normalizeTheme(theme);
   if (normalizedTheme === "neon-line") {
-    return renderNeonLineBadgeSvg(username, views);
+    return renderElectricBadgeSvg(username, views);
   }
   return renderClassicBadgeSvg(username, views);
 }
