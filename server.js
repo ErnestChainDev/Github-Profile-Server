@@ -265,7 +265,7 @@ function renderClassicBadgeSvg(username, views) {
   const rightText = safeViews;
 
   const leftWidth = Math.max(130, leftText.length * 8 + 24);
-  const rightWidth = Math.max(64, rightText.length * 9 + 20);
+  const rightWidth = Math.max(70, rightText.length * 9 + 20);
   const totalWidth = leftWidth + rightWidth;
 
   return `
@@ -281,72 +281,54 @@ function renderClassicBadgeSvg(username, views) {
   `.trim();
 }
 
-function renderNeonBadgeSvg(username, views) {
+function renderNeonLineBadgeSvg(username, views) {
   const safeUsername = escapeXml(username);
   const safeViews = escapeXml(String(views));
 
   const leftText = `${safeUsername} views`;
   const rightText = safeViews;
 
-  const leftWidth = Math.max(150, leftText.length * 8 + 28);
-  const rightWidth = Math.max(72, rightText.length * 9 + 24);
+  const leftWidth = Math.max(180, leftText.length * 8 + 34);
+  const rightWidth = Math.max(82, rightText.length * 10 + 28);
   const totalWidth = leftWidth + rightWidth;
-  const height = 42;
-  const radius = 14;
+  const height = 40;
+  const radius = 12;
 
   return `
 <svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${height}" viewBox="0 0 ${totalWidth} ${height}" role="img" aria-label="${safeUsername} views: ${safeViews}">
   <defs>
-    <linearGradient id="panelLeft" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0a0d18"/>
-      <stop offset="100%" stop-color="#111827"/>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#06080d"/>
+      <stop offset="100%" stop-color="#10131a"/>
     </linearGradient>
 
-    <linearGradient id="panelRight" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#161616"/>
-      <stop offset="100%" stop-color="#0f0f10"/>
+    <linearGradient id="textGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
     </linearGradient>
 
-    <linearGradient id="rainbowStroke" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#ff004d"/>
-      <stop offset="14%" stop-color="#ff7a00"/>
-      <stop offset="28%" stop-color="#ffe600"/>
-      <stop offset="42%" stop-color="#00ff85"/>
-      <stop offset="57%" stop-color="#00e5ff"/>
-      <stop offset="71%" stop-color="#3b82f6"/>
-      <stop offset="85%" stop-color="#8b5cf6"/>
-      <stop offset="100%" stop-color="#ff00e5"/>
+    <linearGradient id="ledRainbow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff3131"/>
+      <stop offset="12.5%" stop-color="#ff8c00"/>
+      <stop offset="25%" stop-color="#ffe600"/>
+      <stop offset="37.5%" stop-color="#5cff00"/>
+      <stop offset="50%" stop-color="#00ff95"/>
+      <stop offset="62.5%" stop-color="#00eaff"/>
+      <stop offset="75%" stop-color="#1d7bff"/>
+      <stop offset="87.5%" stop-color="#7a3cff"/>
+      <stop offset="100%" stop-color="#ff2dbe"/>
       <animateTransform
         attributeName="gradientTransform"
         type="translate"
-        from="-${totalWidth} 0"
-        to="${totalWidth} 0"
-        dur="2.8s"
+        from="-160 0"
+        to="160 0"
+        dur="1.2s"
         repeatCount="indefinite"
       />
     </linearGradient>
 
-    <linearGradient id="rainbowGlow" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#ff004d"/>
-      <stop offset="14%" stop-color="#ff7a00"/>
-      <stop offset="28%" stop-color="#ffe600"/>
-      <stop offset="42%" stop-color="#00ff85"/>
-      <stop offset="57%" stop-color="#00e5ff"/>
-      <stop offset="71%" stop-color="#3b82f6"/>
-      <stop offset="85%" stop-color="#8b5cf6"/>
-      <stop offset="100%" stop-color="#ff00e5"/>
-      <animateTransform
-        attributeName="gradientTransform"
-        type="translate"
-        from="${totalWidth} 0"
-        to="-${totalWidth} 0"
-        dur="3.4s"
-        repeatCount="indefinite"
-      />
-    </linearGradient>
-
-    <filter id="neonGlow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="3.2" result="blur1"/>
+    <filter id="ledGlow" x="-80%" y="-300%" width="260%" height="700%">
+      <feGaussianBlur stdDeviation="1.8" result="blur1"/>
       <feColorMatrix
         in="blur1"
         type="matrix"
@@ -354,89 +336,60 @@ function renderNeonBadgeSvg(username, views) {
           1 0 0 0 0
           0 1 0 0 0
           0 0 1 0 0
-          0 0 0 18 -8"
-        result="glow"
+          0 0 0 20 -8"
+        result="glow1"
       />
+      <feGaussianBlur stdDeviation="4.5" result="blur2"/>
       <feMerge>
-        <feMergeNode in="glow"/>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="glow1"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
 
-    <filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="4.5" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
+    <pattern id="ledDots" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="4" r="1.6" fill="white" opacity="0.95" />
+    </pattern>
+
+    <mask id="lineMask">
+      <rect width="${totalWidth}" height="${height}" fill="black"/>
+      <rect x="12" y="9" width="${totalWidth - 24}" height="8" rx="4" fill="white"/>
+      <rect x="12" y="23" width="${totalWidth - 24}" height="4" rx="2" fill="white" opacity="0.45"/>
+    </mask>
   </defs>
 
-  <rect x="2" y="2" width="${totalWidth - 4}" height="${height - 4}" rx="${radius}" fill="#05070f"/>
+  <rect x="1.5" y="1.5" width="${totalWidth - 3}" height="${height - 3}" rx="${radius}" fill="url(#bg)" stroke="#151922" stroke-width="2"/>
 
-  <rect x="4" y="4" width="${leftWidth - 4}" height="${height - 8}" rx="${radius - 4}" fill="url(#panelLeft)"/>
-  <rect x="${leftWidth}" y="4" width="${rightWidth - 4}" height="${height - 8}" rx="${radius - 4}" fill="url(#panelRight)"/>
+  <rect x="10" y="7" width="${totalWidth - 20}" height="12" rx="6" fill="#0b0f16"/>
+  <rect x="10" y="22" width="${totalWidth - 20}" height="6" rx="3" fill="#0b0f16"/>
 
-  <rect
-    x="2.5"
-    y="2.5"
-    width="${totalWidth - 5}"
-    height="${height - 5}"
-    rx="${radius}"
-    fill="none"
-    stroke="url(#rainbowGlow)"
-    stroke-width="6"
-    opacity="0.45"
-    filter="url(#softGlow)"
-    stroke-dasharray="52 14"
-  >
-    <animate attributeName="stroke-dashoffset" from="0" to="-132" dur="2.6s" repeatCount="indefinite"/>
-  </rect>
+  <g mask="url(#lineMask)" filter="url(#ledGlow)">
+    <rect x="0" y="0" width="${totalWidth}" height="${height}" fill="url(#ledRainbow)"/>
+    <rect x="0" y="0" width="${totalWidth}" height="${height}" fill="url(#ledDots)" opacity="0.85"/>
+  </g>
 
-  <rect
-    x="2.5"
-    y="2.5"
-    width="${totalWidth - 5}"
-    height="${height - 5}"
-    rx="${radius}"
-    fill="none"
-    stroke="url(#rainbowStroke)"
-    stroke-width="3.2"
-    filter="url(#neonGlow)"
-    stroke-dasharray="52 14"
-  >
-    <animate attributeName="stroke-dashoffset" from="0" to="-132" dur="2.6s" repeatCount="indefinite"/>
-  </rect>
-
-  <rect
-    x="5"
-    y="5"
-    width="${totalWidth - 10}"
-    height="${height - 10}"
-    rx="${radius - 4}"
-    fill="none"
-    stroke="rgba(255,255,255,0.16)"
-    stroke-width="1"
-  />
-
-  <circle cx="24" cy="${height / 2}" r="6.5" fill="url(#rainbowStroke)" filter="url(#softGlow)">
-    <animate attributeName="r" values="5.8;7;5.8" dur="1.8s" repeatCount="indefinite"/>
-  </circle>
-
-  <text x="${leftWidth / 2 + 10}" y="27" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="900" fill="#f9fafb">
-    ${leftText}
-  </text>
-
-  <text x="${leftWidth + rightWidth / 2}" y="27" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="900" fill="url(#rainbowStroke)" filter="url(#softGlow)">
-    ${rightText}
-  </text>
+  <g>
+    <text x="${leftWidth / 2}" y="34" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="900" fill="url(#textGlow)">
+      ${leftText}
+    </text>
+    <text x="${leftWidth + rightWidth / 2}" y="34" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="900" fill="#ffffff">
+      ${rightText}
+    </text>
+  </g>
 </svg>
   `.trim();
 }
 
-function renderBadgeSvg(username, views, theme = "classic") {
-  if (theme === "neon") {
-    return renderNeonBadgeSvg(username, views);
+function normalizeTheme(theme) {
+  const t = String(theme || "retro").toLowerCase();
+  if (t === "neon" || t === "neonline" || t === "neon-line") return "neon-line";
+  return "retro";
+}
+
+function renderBadgeSvg(username, views, theme = "retro") {
+  const normalizedTheme = normalizeTheme(theme);
+  if (normalizedTheme === "neon-line") {
+    return renderNeonLineBadgeSvg(username, views);
   }
   return renderClassicBadgeSvg(username, views);
 }
@@ -453,7 +406,7 @@ app.get("/", (_req, res) => {
       top: `${BASE_URL}/api/stats/top`,
       health: `${BASE_URL}/api/health`,
     },
-    themes: ["classic", "neon"],
+    themes: ["retro", "neon-line"],
   });
 });
 
@@ -486,7 +439,7 @@ app.get("/api/views/:username", async (req, res, next) => {
 
 app.get("/api/badge/:username", async (req, res, next) => {
   try {
-    const theme = String(req.query.theme || "classic").toLowerCase();
+    const theme = normalizeTheme(req.query.theme);
     const result = await registerView(req.params.username, req);
 
     if (result.error) {
@@ -514,7 +467,7 @@ app.get("/api/badge/:username", async (req, res, next) => {
 
 app.get("/api/badge-preview/:username", async (req, res, next) => {
   try {
-    const theme = String(req.query.theme || "classic").toLowerCase();
+    const theme = normalizeTheme(req.query.theme);
     const profile = await getProfileData(req.params.username);
 
     if (!profile) {
